@@ -15,6 +15,7 @@ server.on('request', (req, res) => {
       if (pathname.includes('/')) {
         res.statusCode = 400;
         res.end('Wrong filename.');
+        return;
       }
 
       fs.unlink(filepath, (err) => {
