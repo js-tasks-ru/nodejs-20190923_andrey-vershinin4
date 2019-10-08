@@ -1,6 +1,7 @@
 const url = require('url');
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
 
 const server = new http.Server();
 
@@ -11,7 +12,25 @@ server.on('request', (req, res) => {
 
   switch (req.method) {
     case 'DELETE':
+      if (pathname.includes('/')) {
+        res.statusCode = 400;
+        res.end('Wrong filename.');
+      }
 
+      fs.unlink(filepath, (err) => {
+        if (!err) {
+          return res.end('ok!');
+        }
+
+        if (err.code === 'ENOENT') {
+          res.statusCode = 404;
+          res.end('file does not exist');
+        } else {
+          console.log(err);
+          res.statusCode = 500;
+          res.end('internal server error');
+        }
+      });
       break;
 
     default:
