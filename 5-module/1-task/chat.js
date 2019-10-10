@@ -1,22 +1,16 @@
-let clients = Object.create(null);
+const clients = new Set();
 
 exports.subscribe = (ctx) => {
-  const r = Math.random();
-
   return new Promise((resolve) => {
-    clients[r] = resolve;
+    clients.add(resolve);
 
     ctx.res.on('close', () => {
-      delete clients[r];
+      clients.delete(resolve);
     });
   });
 };
 
 exports.publish = (message) => {
-  for (const r in clients) {
-    const resolve = clients[r];
-    resolve(message);
-  }
-
-  clients = Object.create(null);
+  clients.forEach((resolve) => resolve(message));
+  clients.clear();
 };
