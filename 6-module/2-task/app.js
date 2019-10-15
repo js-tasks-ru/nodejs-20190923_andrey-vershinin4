@@ -5,6 +5,8 @@ const {categoryList} = require('./controllers/categories');
 
 const app = new Koa();
 
+app.use(require('koa-bodyparser')());
+
 app.use(async (ctx, next) => {
   try {
     await next();
@@ -25,6 +27,9 @@ const router = new Router({prefix: '/api'});
 router.get('/categories', categoryList);
 router.get('/products', productsBySubcategory, productList);
 router.get('/products/:id', productById);
+
+// router.post('/categories/add', categoryAdd);
+// router.post('/products/add', productAdd);
 
 app.use(router.routes());
 
