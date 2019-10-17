@@ -9,9 +9,8 @@ module.exports = async function authenticate(strategy, email, displayName, done)
   let user = await User.findOne({email});
 
   if (!user) {
-    const _user = {email, displayName};
     try {
-      user = new User(_user);
+      user = new User({email, displayName});
       await user.save();
     } catch (err) {
       return done(err, false);
