@@ -15,14 +15,18 @@ module.exports.register = async (ctx, next) => {
   // Новый юзер
   const verificationToken = uuid();
 
-  const newUser = new User({...userData, verificationToken});
+  const newUser = new User({
+    email: userData.email,
+    displayName: userData.displayName,
+    verificationToken,
+  });
   await newUser.setPassword(userData.password);
   await newUser.save();
 
   await sendMail({
     template: 'confirmation',
     locals: {token: verificationToken},
-    to: userData.email,
+    to: newUser.email,
     subject: 'Подтвердите почту',
   });
 
@@ -42,7 +46,7 @@ module.exports.confirm = async (ctx, next) => {
     return ctx.throw(400, 'Ссылка подтверждения недействительна или устарела');
   }
 
-  user.verificationToken = undefined; // ???
+  user.verificationToken = undefined; // для удаления значения из БД его надо установить в undefined
   await user.save();
 
   const token = await ctx.login(user);
