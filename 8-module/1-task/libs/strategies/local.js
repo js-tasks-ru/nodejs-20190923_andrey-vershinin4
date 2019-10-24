@@ -6,18 +6,19 @@ module.exports = new LocalStrategy(
     async function(email, password, done) {
       try {
         const user = await User.findOne({email});
+
         if (!user) {
           return done(null, false, 'Нет такого пользователя');
-        }
-
-        if (user.verificationToken) {
-          return done(null, false, 'Подтвердите email');
         }
 
         const isValidPassword = await user.checkPassword(password);
 
         if (!isValidPassword) {
           return done(null, false, 'Невереный пароль');
+        }
+
+        if (user.verificationToken) {
+          return done(null, false, 'Подтвердите email');
         }
 
         return done(null, user);
